@@ -230,12 +230,12 @@ const onMapLoad = async () => {
           neighborhood: item.gsx$neighborhood.$t,
           address: item.gsx$addresswithlink.$t,
           currentlyOpenForDistributing: item.gsx$currentlyopenfordistributing.$t,
-          openingForDistributingDontations: item.gsx$openingfordistributingdonations.$t,
+          openingForDistributingDonations: item.gsx$openingfordistributingdonations.$t,
           closingForDistributingDonations: item.gsx$closingfordistributingdonations.$t,
           accepting: item.gsx$accepting.$t,
           notAccepting: item.gsx$notaccepting.$t,
           currentlyOpenForReceiving: item.gsx$currentlyopenforreceiving.$t,
-          openingForReceivingDontations: item.gsx$openingforreceivingdonations.$t,
+          openingForReceivingDonations: item.gsx$openingforreceivingdonations.$t,
           closingForReceivingDonations: item.gsx$closingforreceivingdonations.$t,
           seekingVolunteers: item.gsx$seekingvolunteers.$t,
           seekingMoney: seekingMoney,
@@ -260,13 +260,17 @@ const onMapLoad = async () => {
         // render HTML for marker
         const markerHtml = _.map(location, (value, key) => {
           if (propertyTransforms[key]) return propertyTransforms[key](value)
-          else return `<div class='p row'><p class='txt-deemphasize key'>${camelToTitle(key)}</p><p class='value'>${value}</p></div>`
+          else return `<div class='p row'><p class='txt-deemphasize key' data-translation-id='${key}' >${camelToTitle(key)}</p><p class='value'>${value}</p></div>`
         }).join('')
 
         // create marker
         location.marker = new mapboxgl.Marker({ color: status.accessibleColor })
           .setLngLat([ parseFloat(item.gsx$longitude.$t), parseFloat(item.gsx$latitude.$t) ])
-          .setPopup(new mapboxgl.Popup().setMaxWidth('275px').setHTML(`<div class='popup-content'>${markerHtml}</div>`))
+          .setPopup(new mapboxgl.Popup().setMaxWidth('275px').setHTML(`<div class='popup-content'>${markerHtml}</div>`).on('open', () => {
+            if (translator.language) {
+              translator.translate()
+            }
+          }))
           .addTo(map);
 
           location.marker.getElement().className += " status-" + status.name;
